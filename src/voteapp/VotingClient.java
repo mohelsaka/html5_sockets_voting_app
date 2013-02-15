@@ -10,7 +10,9 @@ import org.json.JSONObject;
 import javaapplication5.WebsocketClient;
 
 public class VotingClient extends WebsocketClient{
-
+	
+	public String name;
+	
 	public VotingClient(Socket socket) throws IOException {
 		super(socket);
 		// TODO Auto-generated constructor stub
@@ -27,7 +29,7 @@ public class VotingClient extends WebsocketClient{
 					while((msg = reiceveMessage()) != null){
 						// let's define our protocol,
 						// Our protocol depends on JSON objects
-						// {function: FFFFF, key1: value1, key2: value2 ...}
+						// {service: FFFFF, key1: value1, key2: value2 ...}
 						/*
 						 *  The user will request:
 						 *  1- the list of available votes.
@@ -36,13 +38,22 @@ public class VotingClient extends WebsocketClient{
 						 *  
 						 * */
 						JSONObject jmsg = new JSONObject(msg);
-						String function = jmsg.getString("function");
-						// {function: 'getvotes'}
-						if(function.equals("getvotes")){
-							VotingClient.this.sendMessage(getVotesItems().toString());
+						String service = jmsg.getString("service");
+						// {service: 'getvotes'}
+						if(service.equals("connect")){
+							VotingClient.this.name = jmsg.getString("username");
+							
+							// TODO: check if this client has voted before or not.
+							// if yes, send him his previous vote as he may want to change his mind!
+							// if no, send him the list to vote on but don't send him the result of the votes.
+							JSONObject o = new JSONObject();
+							o.put("list", getVotesItems());
+//							o.put("myvotes", "Sunday 10:00 am");
+//							o.put("result", "[15, 20, 18, 20]");
+							VotingClient.this.sendMessage(o.toString());
 						}
-						// e.g. {function: 'votefor', username: 'saka', item: 'Satday 03:00 pm'}
-						else if(function.equals("votefor")){
+						// e.g. {service: 'votefor', username: 'saka', item: 'Satday 03:00 pm'}
+						else if(service.equals("votefor")){
 							String username = jmsg.getString("username");
 							String item = jmsg.getString("item");
 							addVoteFor(username, item);

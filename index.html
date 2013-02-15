@@ -1,26 +1,47 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-
+  <script src="js/jquery-1.9.0.js"></script>
+  <script src="js/jquery-ui-1.10.0.custom.js"></script>
 </head>
 
 <body>
 
-  <button type="button" onclick="connect();">Connect</button>
-  <button type="button" onclick="connection.close()">Close</button>
+  <h1  align="center">
+    Welcome for voting application
+  </h1>
 
+  <h3 id='error-msg'></h3>
 
-  <form>
-  <input type="text" id="msg" />
+  <label>Please enter your name</label>
+  <input type="text" id="name" />
 
-  <button type="button" onclick="sayHello();">Say Hello!</button>
+  <button type="button" onclick='connect($("#name").val());'>Show me votes</button>
+
+  <hr/>
+  <div>
+    <input type="radio" name="vote" value="Milk"> Milk <br>
+    <input type="radio" name="vote" value="Butter" checked> Butter<br>
+    <input type="radio" name="vote" value="Cheese"> Cheese<br>
+  </div>
+  <hr/>
 
   <script>
     var connection;
 
-    function connect() {
+    function connect(username) {
+      // checking if the username is empty
+      if(username == ""){
+        $("#error-msg").hide().html("Please enter your name").show('slow');
+        return;
+      }
+
+      // clearing the error message header
+      $("#error-msg").hmtl("").hide('slow');
+
       console.log("connection");
       connection = new WebSocket("ws://localhost:2005/");
+
       // Log errors
       connection.onerror = function (error) {
         console.log('WebSocket Error ');
@@ -40,6 +61,8 @@
       connection.onclose = function (e) {
         console.log("Connection closed...");
       }
+
+      connection.send({service: 'connect', username: username})
     }
 
     function sayHello() {
