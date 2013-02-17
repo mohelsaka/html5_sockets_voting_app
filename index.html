@@ -12,12 +12,12 @@
 		</script>
 		<script type="text/javascript">
 			var connection;
-			function update(data) {
+			function update(items, data) {
 				var canvas = document.getElementById("canvas"),
 				ctx = canvas.getContext("2d");
-				console.log(ctx);
+				ctx.font = "bold 12px sans-serif";
 				// var data = [75,68,32,95,20,51];
-				var colors = ["#7E3817", "#C35817", "#EE9A4D", "#A0C544", "#348017", "#307D7E"];
+				var colors = ["#7E3817", "#7FFF00", "#6495ED", "#FF8C00", "#9400D3", "#307D7E"];
 				var center = [canvas.width / 2, canvas.height / 2];
 				var radius = Math.min(canvas.width, canvas.height) / 2;
 				var lastPosition = 0, total = 0;
@@ -26,6 +26,8 @@
 				}
 				for (var i = 0; i < data.length; i++) {
 					ctx.fillStyle = colors[i];
+					var percentage = (data[i]/total*100).toFixed(2);
+					ctx.fillText(items[i]+" "+data[i]+" ("+percentage+")", 10, (i+1)*20);
 					ctx.beginPath();
 					ctx.moveTo(center[0],center[1]);
 					ctx.arc(center[0],center[1],radius,lastPosition,lastPosition+(Math.PI*2*(data[i]/total)),false);
@@ -62,7 +64,7 @@
 					} else if(obj.response) {
 						alert(obj.response);
 					} else {
-						update(obj.votes);
+						update(obj.items, obj.votes);
 						// console.log(obj.items);
 						// console.log(obj.votes);
 					}
@@ -112,7 +114,7 @@
 				submit
 			</button>
 		</div>
-		<canvas id="canvas" width="500" height="400" style="border:1px solid #000000; z-index:1000; position: absolute; top: 160px; left: 800px;">
+		<canvas id="canvas" width="600" height="400" style="border:1px solid #000000; z-index:1000; position: absolute; top: 160px; left: 800px;">
 		</canvas>
 	</body>
 </html>
